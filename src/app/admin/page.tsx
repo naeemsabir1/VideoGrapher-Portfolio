@@ -35,10 +35,10 @@ export default function AdminDashboardPage() {
           </CardContent>
           <CardFooter className="pt-4 pb-6">
             <Link 
-              href="/admin/category/all"
+              href={`/admin/category/${CATEGORIES[0].slug}`}
               className="text-[14px] font-semibold text-[var(--accent-terra)] hover:text-[#A95230] transition-colors flex items-center"
             >
-              Manage all →
+              Manage videos →
             </Link>
           </CardFooter>
         </Card>

@@ -92,13 +92,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </h1>
           </div>
           
-          <Link
+          <a
             href="/admin/logout"
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--accent-terra)] hover:bg-[var(--accent-terra)]/10 transition-colors rounded-[var(--radius-pill)] ml-auto"
           >
             <span className="hidden sm:inline">Log Out</span>
             <LogOut className="w-[18px] h-[18px]" />
-          </Link>
+          </a>
         </header>
 
         {/* Scrollable Main */}

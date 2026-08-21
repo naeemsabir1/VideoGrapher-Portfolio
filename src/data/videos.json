@@ -1,0 +1,180 @@
+[
+  {
+    "id": "v_ai_1",
+    "title": "SkinGlow Serum — Viral Hook Ad",
+    "description": "High-converting UGC ad with a strong 3-second visual hook.",
+    "category": "ai-ugc-ads",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "ugc",
+      "beauty",
+      "conversion"
+    ],
+    "featured": true,
+    "createdAt": "2026-08-21T10:00:00Z"
+  },
+  {
+    "id": "v_ai_2",
+    "title": "TechPack App — Unboxing UGC",
+    "description": "Authentic-feeling product unboxing and first impressions.",
+    "category": "ai-ugc-ads",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "tech",
+      "unboxing"
+    ],
+    "featured": false,
+    "createdAt": "2026-08-20T10:00:00Z"
+  },
+  {
+    "id": "v_mg_1",
+    "title": "2024 Showreel Opener",
+    "description": "Fast-paced kinetic typography and 3D elements.",
+    "category": "motion-graphics",
+    "imageKitUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "aspectRatio": "horizontal",
+    "tags": [
+      "kinetic",
+      "3d",
+      "showreel"
+    ],
+    "featured": true,
+    "createdAt": "2026-08-19T10:00:00Z"
+  },
+  {
+    "id": "v_mg_2",
+    "title": "Brand Identity Reveal",
+    "description": "Smooth logo build and brand element animation.",
+    "category": "motion-graphics",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "branding",
+      "logo"
+    ],
+    "featured": false,
+    "createdAt": "2026-08-18T10:00:00Z"
+  },
+  {
+    "id": "v_mga_1",
+    "title": "FinTech Startup Launch",
+    "description": "Animated explainer ad breaking down complex financial concepts.",
+    "category": "motion-graphic-ads",
+    "imageKitUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "aspectRatio": "horizontal",
+    "tags": [
+      "finance",
+      "explainer",
+      "b2b"
+    ],
+    "featured": true,
+    "createdAt": "2026-08-17T10:00:00Z"
+  },
+  {
+    "id": "v_mga_2",
+    "title": "Sneaker Drop Hype Video",
+    "description": "High-energy graphic ad for a limited edition shoe release.",
+    "category": "motion-graphic-ads",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "fashion",
+      "hype",
+      "retail"
+    ],
+    "featured": false,
+    "createdAt": "2026-08-16T10:00:00Z"
+  },
+  {
+    "id": "v_app_1",
+    "title": "Fitness Tracker App Preview",
+    "description": "Clean UI animations showing app features for App Store.",
+    "category": "app-promo-ads",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "app-store",
+      "ui",
+      "fitness"
+    ],
+    "featured": true,
+    "createdAt": "2026-08-15T10:00:00Z"
+  },
+  {
+    "id": "v_app_2",
+    "title": "Delivery App Social Campaign",
+    "description": "Snappy, 15-second social media promo driving app installs.",
+    "category": "app-promo-ads",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "social",
+      "delivery",
+      "installs"
+    ],
+    "featured": false,
+    "createdAt": "2026-08-14T10:00:00Z"
+  },
+  {
+    "id": "v_ve_1",
+    "title": "Travel VLog: Tokyo Nights",
+    "description": "Immersive narrative edit with seamless transitions and sound design.",
+    "category": "basic-video-editing",
+    "imageKitUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "aspectRatio": "horizontal",
+    "tags": [
+      "travel",
+      "vlog",
+      "cinematic"
+    ],
+    "featured": true,
+    "createdAt": "2026-08-13T10:00:00Z"
+  },
+  {
+    "id": "v_ve_2",
+    "title": "Corporate Interview Cut",
+    "description": "Clean, multi-cam edit with b-roll overlays and polished audio.",
+    "category": "basic-video-editing",
+    "imageKitUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+    "aspectRatio": "horizontal",
+    "tags": [
+      "corporate",
+      "interview",
+      "documentary"
+    ],
+    "featured": false,
+    "createdAt": "2026-08-12T10:00:00Z"
+  },
+  {
+    "id": "v_pod_1",
+    "title": "Marketing Secrets Clip",
+    "description": "Engaging vertical clip with dynamic captions and pop-up graphics.",
+    "category": "long-form-content",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "captions",
+      "viral",
+      "podcast"
+    ],
+    "featured": true,
+    "createdAt": "2026-08-11T10:00:00Z"
+  },
+  {
+    "id": "v_pod_2",
+    "title": "Comedy Hour Highlight",
+    "description": "Punchy edit focusing on comedic timing, formatted for Reels/TikTok.",
+    "category": "long-form-content",
+    "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
+    "aspectRatio": "vertical",
+    "tags": [
+      "comedy",
+      "tiktok",
+      "reels"
+    ],
+    "featured": false,
+    "createdAt": "2026-08-10T10:00:00Z"
+  }
+]

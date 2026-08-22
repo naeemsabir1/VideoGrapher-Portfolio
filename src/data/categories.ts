@@ -9,6 +9,13 @@ export const CATEGORIES: CategoryMeta[] = [
     color: 'bg-terra'
   },
   {
+    slug: 'basic-video-editing',
+    label: 'Video Editing',
+    description: 'Clean, story-driven editing with perfect pacing.',
+    emoji: '🎬',
+    color: 'bg-gold'
+  },
+  {
     slug: 'motion-graphics',
     label: 'Motion Graphics',
     description: 'Pure motion art — kinetic type, 2D & 3D motion design.',
@@ -21,13 +28,6 @@ export const CATEGORIES: CategoryMeta[] = [
     description: 'Slick app store & social promos that drive downloads.',
     emoji: '📱',
     color: 'bg-terra'
-  },
-  {
-    slug: 'basic-video-editing',
-    label: 'Video Editing',
-    description: 'Clean, story-driven editing with perfect pacing.',
-    emoji: '🎬',
-    color: 'bg-gold'
   },
   {
     slug: 'long-form-content',

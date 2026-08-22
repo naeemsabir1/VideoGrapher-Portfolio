@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   description: 'Swipe through curated video work: motion graphics, AI UGC ads, app promos & more. Available for freelance work.',
   keywords: ['video editor', 'motion graphics', 'AI UGC ads', 'app promo', 'freelance video', 'video portfolio'],
-  authors: [{ name: 'Your Name' }],
+  authors: [{ name: 'Naeem' }],
   openGraph: {
     type: 'website',
     title: 'The Reel — Video Portfolio',

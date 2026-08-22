@@ -247,3 +247,24 @@ body {
   background-size: 200% 100%;
   animation: shimmer 2s infinite linear;
 }
+
+/* ============================================
+   Performance / GPU compositing utilities
+   ============================================ */
+
+/* Promote element to its own GPU compositing layer — used on video slides
+   to keep native scrolling fast on mobile and avoid main-thread jank. */
+.gpu-layer {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Allow browser to skip layout/paint for content far off-screen.
+   Applied per video slide — dramatically reduces scroll lag on mobile. */
+.content-auto {
+  content-visibility: auto;
+  /* Estimate intrinsic height so the browser knows scroll position */
+  contain-intrinsic-size: 0 100dvh;
+}

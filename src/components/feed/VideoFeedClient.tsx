@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { VideoItem, CategoryMeta } from '@/types';
@@ -6,8 +6,10 @@ import { VideoPlayer, VideoPlayerRef } from '@/components/video/VideoPlayer';
 import { VideoInfoHUD } from '@/components/feed/VideoInfoHUD';
 import { VideoActions } from '@/components/feed/VideoActions';
 import { VideoDetailsPanel } from '@/components/feed/VideoDetailsPanel';
+import { VideoGalleryDrawer } from '@/components/feed/VideoGalleryDrawer';
 import { ContactModal } from '@/components/ui/ContactModal';
 import { useContact } from '@/context/ContactContext';
+import { getOptimizedVideoUrl, getVideoThumbnailUrl } from '@/lib/imagekit';
 
 import { Play, Pause, ChevronLeft, VolumeX, Volume2 } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -21,25 +23,36 @@ interface VideoFeedClientProps {
 export function VideoFeedClient({ videos, categoryMeta }: VideoFeedClientProps) {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
-  
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isGlobalMuted, setIsGlobalMuted] = useState(true);
   const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
+  const [galleryDrawerOpen, setGalleryDrawerOpen] = useState(false);
   const { isOpen: contactModalOpen, openModal: openContactModal, closeModal: closeContactModal } = useContact();
   const [progress, setProgress] = useState(0);
   const [indicator, setIndicator] = useState<{ type: 'play' | 'pause'; id: number } | null>(null);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const playerRefs = useRef<(VideoPlayerRef | null)[]>([]);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
+  // Pre-compute thumbnail URLs so they're available on first render (instant covers)
+  const thumbnailUrls = useRef<string[]>(
+    videos.map((v) => v.thumbnailUrl || getVideoThumbnailUrl(v.imageKitUrl, v.aspectRatio))
+  );
+
+  // Pre-compute optimized video source URLs
+  const optimizedVideoUrls = useRef<string[]>(
+    videos.map((v) => getOptimizedVideoUrl(v.imageKitUrl))
+  );
+
   // Intersection Observer to detect which video is currently in view
   useEffect(() => {
     const observerOptions = {
       root: containerRef.current,
-      threshold: 0.6, // Adjusted slightly so it triggers when mostly visible
+      threshold: 0.6,
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -49,7 +62,7 @@ export function VideoFeedClient({ videos, categoryMeta }: VideoFeedClientProps) 
           setCurrentIndex(index);
           setIsPaused(false);
           setProgress(0);
-          
+
           playerRefs.current.forEach((player, i) => {
             if (i === index) {
               if (!prefersReducedMotion) {
@@ -81,7 +94,7 @@ export function VideoFeedClient({ videos, categoryMeta }: VideoFeedClientProps) 
   // Play/Pause toggle on click
   const togglePlayPause = useCallback(() => {
     const activePlayer = playerRefs.current[currentIndex];
-    if (isPaused || prefersReducedMotion) { // If prefers reduced motion, it might be paused by default
+    if (isPaused || prefersReducedMotion) {
       activePlayer?.play();
       setIsPaused(false);
       setIndicator({ type: 'play', id: Date.now() });
@@ -95,7 +108,7 @@ export function VideoFeedClient({ videos, categoryMeta }: VideoFeedClientProps) 
   // Keyboard navigation support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (detailsPanelOpen || contactModalOpen) return;
+      if (detailsPanelOpen || contactModalOpen || galleryDrawerOpen) return;
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -104,16 +117,15 @@ export function VideoFeedClient({ videos, categoryMeta }: VideoFeedClientProps) 
         e.preventDefault();
         scrollToIndex(currentIndex - 1);
       } else if (e.key === ' ' || e.code === 'Space') {
-        // Only trigger if not typing in an input/textarea (like contact form)
         if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
         e.preventDefault();
         togglePlayPause();
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, scrollToIndex, detailsPanelOpen, contactModalOpen, togglePlayPause]);
+  }, [currentIndex, scrollToIndex, detailsPanelOpen, contactModalOpen, galleryDrawerOpen, togglePlayPause]);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>, index: number) => {
     if (index === currentIndex) {
@@ -155,8 +167,8 @@ export function VideoFeedClient({ videos, categoryMeta }: VideoFeedClientProps) 
         <span className="text-6xl mb-4" aria-hidden="true">{categoryMeta.emoji || '🎬'}</span>
         <h2 className="text-2xl font-bold mb-2 font-display">No videos in this category yet.</h2>
         <p className="text-gray-400 mb-8">Check back soon.</p>
-        <button 
-          onClick={() => router.back()} 
+        <button
+          onClick={() => router.back()}
           className="flex items-center gap-2 px-6 py-3 bg-[var(--bg-base)] text-[var(--text-primary)] rounded-full font-semibold hover:bg-gray-200 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent-terra)] focus-visible:outline-offset-2"
           aria-label="Go back to categories"
         >
@@ -168,132 +180,164 @@ export function VideoFeedClient({ videos, categoryMeta }: VideoFeedClientProps) 
   }
 
   return (
-    <div className="w-full max-w-[100dvw] h-[100dvh] overflow-x-hidden bg-[var(--text-primary)] grid grid-cols-1 md:grid-cols-[55%_45%] relative z-[10000]">
-      <ContactModal 
-        isOpen={contactModalOpen} 
-        onClose={closeContactModal} 
+    <div className="w-full max-w-[100dvw] h-[100dvh] overflow-x-hidden bg-black grid grid-cols-1 md:grid-cols-[55%_45%] relative z-[10000]">
+      <ContactModal
+        isOpen={contactModalOpen}
+        onClose={closeContactModal}
       />
-      
-      {/* Left Column: Feed */}
-      <div 
+
+      {/* Gallery Drawer — click on video counter to open */}
+      <VideoGalleryDrawer
+        videos={videos}
+        currentIndex={currentIndex}
+        isOpen={galleryDrawerOpen}
+        onClose={() => setGalleryDrawerOpen(false)}
+        onSelectVideo={(index) => {
+          scrollToIndex(index);
+        }}
+      />
+
+      {/* Left Column: Video Feed */}
+      <div
         id="main-content"
         ref={containerRef}
         className="w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none [&::-webkit-scrollbar]:hidden relative scroll-smooth overscroll-y-contain"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          // GPU compositing layer for smooth mobile scroll
+          willChange: 'transform',
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-y',
+        } as React.CSSProperties}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         tabIndex={0}
         aria-label="Video feed"
       >
-        {videos.map((video, index) => (
-          <div 
-            key={video.id}
-            data-index={index}
-            ref={(el) => { slideRefs.current[index] = el; }}
-            className="w-full h-[100dvh] snap-start relative flex items-center justify-center bg-[var(--text-primary)] cursor-pointer overflow-hidden focus-visible:outline focus-visible:outline-4 focus-visible:outline-[var(--accent-terra)] focus-visible:-outline-offset-4"
-            onClick={togglePlayPause}
-            tabIndex={0}
-            aria-label={`Video ${index + 1}: ${video.title}`}
-          >
-            {/* Progress Bar */}
-            {currentIndex === index && (
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--bg-base)]/20 z-50">
-                <div 
-                  className="h-full bg-[var(--accent-terra)] transition-[width] duration-300 ease-linear" 
-                  style={{ width: `${progress}%` }} 
-                />
-              </div>
-            )}
+        {videos.map((video, index) => {
+          const thumbUrl = thumbnailUrls.current[index];
+          const videoUrl = Math.abs(currentIndex - index) <= 1 ? optimizedVideoUrls.current[index] : undefined;
 
-            {/* Video Counter Indicator */}
-            <div className="absolute top-4 right-4 z-40 bg-[rgba(28,23,20,0.5)] text-[var(--bg-base)] font-body text-[11px] px-3 py-1.5 rounded-full backdrop-blur-sm pointer-events-none">
-              {index + 1} / {videos.length}
-            </div>
-
-            <VideoPlayer
-              ref={(el) => { playerRefs.current[index] = el; }}
-              url={Math.abs(currentIndex - index) <= 1 ? video.imageKitUrl : undefined}
-              title={video.title}
-              thumbnailUrl={video.thumbnailUrl}
-              priority={index === 0}
-              aspectRatio={video.aspectRatio}
-              autoPlay={index === 0 && !prefersReducedMotion}
-              muted={isGlobalMuted}
-              loop={true}
-              onTimeUpdate={(e) => handleTimeUpdate(e, index)}
-            />
-            
-            {/* Play/Pause indicator overlay */}
-            <AnimatePresence>
-              {indicator && currentIndex === index && !prefersReducedMotion && (
-                <motion.div
-                  key={indicator.id}
-                  initial={{ scale: 0.8, opacity: 1 }}
-                  animate={{ scale: [0.8, 1.0, 1.2], opacity: [1, 1, 0] }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  onAnimationComplete={() => setIndicator(null)}
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none z-40"
-                >
-                  {indicator.type === 'play' ? (
-                    <Play className="w-[48px] h-[48px] text-[var(--bg-base)] fill-white" />
-                  ) : (
-                    <Pause className="w-[48px] h-[48px] text-[var(--bg-base)] fill-white" />
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Mute Toggle Button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsGlobalMuted(!isGlobalMuted);
-              }}
-              className="absolute bottom-[120px] left-[12px] w-[48px] h-[48px] rounded-full flex items-center justify-center bg-[#F7F3EE]/15 backdrop-blur-[8px] border border-white/20 text-[var(--bg-base)] hover:bg-[rgba(192,96,58,0.85)] hover:border-transparent transition-colors duration-200 z-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent-terra)] focus-visible:outline-offset-2"
-              aria-label={isGlobalMuted ? "Unmute video" : "Mute video"}
+          return (
+            <div
+              key={video.id}
+              data-index={index}
+              ref={(el) => { slideRefs.current[index] = el; }}
+              className="w-full h-[100dvh] snap-start relative flex items-center justify-center bg-black cursor-pointer overflow-hidden focus-visible:outline focus-visible:outline-4 focus-visible:outline-[var(--accent-terra)] focus-visible:-outline-offset-4"
+              // GPU compositing hint: promotes each slide to its own composite layer
+              style={{ transform: 'translateZ(0)', willChange: 'transform' }}
+              onClick={togglePlayPause}
+              tabIndex={0}
+              aria-label={`Video ${index + 1}: ${video.title}`}
             >
-              {isGlobalMuted ? <VolumeX className="w-[22px] h-[22px]" /> : <Volume2 className="w-[22px] h-[22px]" />}
-            </button>
+              {/* Progress Bar */}
+              {currentIndex === index && (
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/20 z-50">
+                  <div
+                    className="h-full bg-[var(--accent-terra)] transition-[width] duration-300 ease-linear"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              )}
 
-            {/* Mobile Bottom HUD */}
-            <VideoInfoHUD 
-              variant="mobile" 
-              video={video} 
-              isActive={currentIndex === index} 
-              onDetailsOpen={() => setDetailsPanelOpen(true)} 
-              onContactClick={openContactModal}
-            />
+              {/* Video Counter — clickable to open gallery drawer */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setGalleryDrawerOpen(true);
+                }}
+                className="absolute top-4 right-4 z-40 bg-[rgba(0,0,0,0.55)] text-white font-body text-[11px] px-3 py-1.5 rounded-full backdrop-blur-sm hover:bg-[rgba(169,82,48,0.85)] transition-colors duration-200 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent-terra)] focus-visible:outline-offset-2"
+                aria-label={`Video ${index + 1} of ${videos.length} — tap to see all videos`}
+              >
+                {index + 1} / {videos.length}
+              </button>
 
-            {/* Right-side action buttons (mobile only) */}
-            <div className="md:hidden">
-              <VideoActions
+              <VideoPlayer
+                ref={(el) => { playerRefs.current[index] = el; }}
+                url={videoUrl}
+                title={video.title}
+                thumbnailUrl={thumbUrl}
+                priority={index === 0}
+                aspectRatio={video.aspectRatio}
+                autoPlay={index === 0 && !prefersReducedMotion}
+                muted={isGlobalMuted}
+                loop={true}
+                onTimeUpdate={(e) => handleTimeUpdate(e, index)}
+              />
+
+              {/* Play/Pause indicator overlay */}
+              <AnimatePresence>
+                {indicator && currentIndex === index && !prefersReducedMotion && (
+                  <motion.div
+                    key={indicator.id}
+                    initial={{ scale: 0.8, opacity: 1 }}
+                    animate={{ scale: [0.8, 1.0, 1.2], opacity: [1, 1, 0] }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                    onAnimationComplete={() => setIndicator(null)}
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none z-40"
+                  >
+                    {indicator.type === 'play' ? (
+                      <Play className="w-[48px] h-[48px] text-white fill-white" />
+                    ) : (
+                      <Pause className="w-[48px] h-[48px] text-white fill-white" />
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Mute Toggle Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsGlobalMuted(!isGlobalMuted);
+                }}
+                className="absolute bottom-[120px] left-[12px] w-[48px] h-[48px] rounded-full flex items-center justify-center bg-[#F7F3EE]/15 backdrop-blur-[8px] border border-white/20 text-white hover:bg-[rgba(192,96,58,0.85)] hover:border-transparent transition-colors duration-200 z-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent-terra)] focus-visible:outline-offset-2"
+                aria-label={isGlobalMuted ? 'Unmute video' : 'Mute video'}
+              >
+                {isGlobalMuted ? <VolumeX className="w-[22px] h-[22px]" /> : <Volume2 className="w-[22px] h-[22px]" />}
+              </button>
+
+              {/* Mobile Bottom HUD */}
+              <VideoInfoHUD
+                variant="mobile"
+                video={video}
                 isActive={currentIndex === index}
                 onDetailsOpen={() => setDetailsPanelOpen(true)}
                 onContactClick={openContactModal}
-                onNext={() => scrollToIndex(index + 1)}
+              />
+
+              {/* Right-side action buttons (mobile only) */}
+              <div className="md:hidden">
+                <VideoActions
+                  isActive={currentIndex === index}
+                  onDetailsOpen={() => setDetailsPanelOpen(true)}
+                  onContactClick={openContactModal}
+                  onNext={() => scrollToIndex(index + 1)}
+                />
+              </div>
+
+              {/* Slide-up Details Drawer */}
+              <VideoDetailsPanel
+                video={video}
+                isOpen={detailsPanelOpen && currentIndex === index}
+                onClose={() => setDetailsPanelOpen(false)}
+                onContactClick={openContactModal}
               />
             </div>
-
-            {/* Slide-up Drawer */}
-            <VideoDetailsPanel
-              video={video}
-              isOpen={detailsPanelOpen && currentIndex === index}
-              onClose={() => setDetailsPanelOpen(false)}
-              onContactClick={openContactModal}
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Right Column: Desktop Info */}
+      {/* Right Column: Desktop Info Panel */}
       <div className="hidden md:block h-full bg-[var(--bg-base)] border-l border-[var(--border-subtle)] relative z-10">
         {activeVideo && (
           <div key={activeVideo.id} className="w-full h-full animate-in fade-in duration-500 fill-mode-both">
-            <VideoInfoHUD 
-              variant="desktop" 
-              video={activeVideo} 
-              isActive={true} 
-              onDetailsOpen={() => {}} 
+            <VideoInfoHUD
+              variant="desktop"
+              video={activeVideo}
+              isActive={true}
+              onDetailsOpen={() => {}}
               onContactClick={openContactModal}
             />
           </div>

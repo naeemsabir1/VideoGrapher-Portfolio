@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Image from 'next/image';
@@ -96,56 +96,67 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       setIsLoading(false);
     };
 
+    // Both vertical and horizontal use object-contain so the video is NEVER cropped.
+    // The container background is always black (#000) which creates the letterbox effect.
+    const videoClassName = cn(
+      'w-full h-full object-contain',
+      aspectRatio === 'horizontal' ? 'max-h-full aspect-video' : '',
+      isLoading || hasError ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'
+    );
+
     return (
       <div
         className={cn(
-          "w-full h-full relative overflow-hidden flex items-center justify-center",
-          aspectRatio === 'horizontal' ? "bg-[var(--text-primary)]" : "bg-transparent",
+          // Always black background — provides letterbox for both portrait and landscape
+          'w-full h-full relative overflow-hidden flex items-center justify-center bg-black',
           className
         )}
       >
         {hasError ? (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-[var(--bg-base)]/50 bg-[var(--text-primary)]/80 backdrop-blur-sm">
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-white/50 bg-black/80 backdrop-blur-sm">
             <AlertCircle className="w-10 h-10 mb-2 opacity-50" />
             <p className="font-medium text-sm">Video unavailable</p>
           </div>
         ) : null}
 
+        {/* Thumbnail shown while video is loading — always object-contain to match video */}
         {thumbnailUrl && !hasError && (
           <Image
             src={thumbnailUrl}
-            alt={title || "Video thumbnail"}
+            alt={title || 'Video thumbnail'}
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 55vw"
             priority={priority}
             className={cn(
-              aspectRatio === 'horizontal' ? "object-contain" : "object-cover",
-              "transition-opacity duration-300",
-              isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
+              'object-contain transition-opacity duration-300',
+              isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'
             )}
           />
         )}
+
+        {/* Spinner shown when no thumbnail is available yet */}
         {isLoading && !thumbnailUrl && !hasError && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center animate-shimmer pointer-events-none">
-            <div className="w-[24px] h-[24px] border-2 border-[var(--accent-terra)] border-t-transparent rounded-full animate-spin" />
+          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+            <div className="w-[28px] h-[28px] border-2 border-[var(--accent-terra)] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
+
         {url && (
           <video
             ref={videoRef}
             src={url}
-            aria-label={title || "Video player"}
+            aria-label={title || 'Video player'}
             muted={muted}
             loop={loop}
             playsInline
+            // preload="metadata" fetches just enough to show first frame without
+            // downloading the entire file — key for faster perceived load time.
+            preload="metadata"
+            poster={thumbnailUrl}
             onEnded={onEnded}
             onTimeUpdate={onTimeUpdate}
             onError={handleError}
-            className={cn(
-              "w-full h-full",
-              aspectRatio === 'horizontal' ? "object-contain aspect-video" : "object-cover",
-              isLoading || hasError ? "opacity-0" : "opacity-100 transition-opacity duration-300"
-            )}
+            className={videoClassName}
           />
         )}
       </div>

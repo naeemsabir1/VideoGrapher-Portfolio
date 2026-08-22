@@ -117,7 +117,7 @@
     "description": "Long form YouTube Content 4 showcase.",
     "category": "long-form-content",
     "imageKitUrl": "https://ik.imagekit.io/wzgiskwjw/VideoGrapher/video%20editing/Long%20form%20YouTube%20Content%204.mp4",
-    "aspectRatio": "vertical",
+    "aspectRatio": "horizontal",
     "tags": [
       "portfolio",
       "long-form-content"
@@ -187,7 +187,7 @@
     "description": "Long form YouTube Content 3 showcase.",
     "category": "long-form-content",
     "imageKitUrl": "https://ik.imagekit.io/wzgiskwjw/VideoGrapher/video%20editing/Long%20form%20YouTube%20Content%203.mp4",
-    "aspectRatio": "vertical",
+    "aspectRatio": "horizontal",
     "tags": [
       "portfolio",
       "long-form-content"
@@ -201,7 +201,7 @@
     "description": "Long Form YouTube Content 2 showcase.",
     "category": "long-form-content",
     "imageKitUrl": "https://ik.imagekit.io/wzgiskwjw/VideoGrapher/video%20editing/Long%20Form%20YouTube%20Content%202.mp4",
-    "aspectRatio": "vertical",
+    "aspectRatio": "horizontal",
     "tags": [
       "portfolio",
       "long-form-content"

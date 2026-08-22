@@ -11,17 +11,10 @@
  * - q-auto: auto-selects optimal quality (good balance of size vs quality)
  */
 export function getOptimizedVideoUrl(imageKitUrl: string): string {
-  if (!imageKitUrl) return imageKitUrl;
-  try {
-    const url = new URL(imageKitUrl);
-    // Only apply to ImageKit URLs
-    if (!url.hostname.includes('imagekit.io')) return imageKitUrl;
-    // Append transformation params
-    url.searchParams.set('tr', 'f-auto,q-auto');
-    return url.toString();
-  } catch {
-    return imageKitUrl;
-  }
+  // Video transformations (f-auto,q-auto) often require a premium ImageKit tier 
+  // or specific ABS endpoints. Appending them to raw MP4s causes 400 Bad Request.
+  // We return the raw URL for videos to ensure they play properly.
+  return imageKitUrl;
 }
 
 /**

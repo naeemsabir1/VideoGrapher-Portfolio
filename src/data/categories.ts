@@ -9,13 +9,6 @@ export const CATEGORIES: CategoryMeta[] = [
     color: 'bg-terra'
   },
   {
-    slug: 'meta-ads',
-    label: 'Meta Ads',
-    description: 'High-converting video ads optimized for Facebook and Instagram.',
-    emoji: '📈',
-    color: 'bg-sage'
-  },
-  {
     slug: 'motion-graphics',
     label: 'Motion Graphics',
     description: 'Pure motion art — kinetic type, 2D & 3D motion design.',
@@ -41,6 +34,13 @@ export const CATEGORIES: CategoryMeta[] = [
     label: 'Long Form content',
     description: 'Media for youtube etc.',
     emoji: '🎞️',
+    color: 'bg-sage'
+  },
+  {
+    slug: 'animation',
+    label: 'Animation',
+    description: 'Engaging 2D and 3D animated video content.',
+    emoji: '🎨',
     color: 'bg-sage'
   }
 ];

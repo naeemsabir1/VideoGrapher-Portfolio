@@ -61,7 +61,7 @@
     "id": "v_mga_1",
     "title": "FinTech Startup Launch",
     "description": "Animated explainer ad breaking down complex financial concepts.",
-    "category": "meta-ads",
+    "category": "animation",
     "imageKitUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
     "aspectRatio": "horizontal",
     "tags": [
@@ -76,7 +76,7 @@
     "id": "v_mga_2",
     "title": "Sneaker Drop Hype Video",
     "description": "High-energy graphic ad for a limited edition shoe release.",
-    "category": "meta-ads",
+    "category": "animation",
     "imageKitUrl": "https://ik.imagekit.io/demo/sample-video.mp4",
     "aspectRatio": "vertical",
     "tags": [

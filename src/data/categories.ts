@@ -10,7 +10,7 @@ export const CATEGORIES: CategoryMeta[] = [
   },
   {
     slug: 'basic-video-editing',
-    label: 'Video Editing',
+    label: 'Video Editing/Ads',
     description: 'Clean, story-driven editing with perfect pacing.',
     emoji: '🎬',
     color: 'bg-gold'

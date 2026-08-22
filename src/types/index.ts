@@ -14,7 +14,7 @@ export interface VideoItem {
 export type VideoCategory =
   | 'ai-ugc-ads'
   | 'motion-graphics'
-  | 'motion-graphic-ads'
+  | 'meta-ads'
   | 'app-promo-ads'
   | 'basic-video-editing'
   | 'long-form-content';
